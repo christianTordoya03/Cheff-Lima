@@ -1,70 +1,80 @@
-<div class="container">
-  <h2>Crear Nueva Receta</h2>
+<div class="mobile-container">
+    <header class="app-header">
+        <div class="header-content">
+            <span class="back-icon" routerLink="/dashboard">←</span>
+            <h1>Nuevo Plato</h1>
+            <div class="user-badge">👨‍🍳</div>
+        </div>
+    </header>
 
-  <form [formGroup]="recetaForm" (ngSubmit)="guardarReceta()" class="chef-form">
-    <div class="header-recipe">
-      <div class="form-group">
-        <label>Nombre del Plato:</label>
-        <input type="text" formControlName="nombre" placeholder="Ej: Ceviche de Pescado">
-      </div>
-      <div class="form-group">
-        <label>N° de Porciones:</label>
-        <input type="number" formControlName="porciones" (input)="calcularCostoTotal()">
-      </div>
-    </div>
+    <form [formGroup]="recetaForm" (ngSubmit)="guardarReceta()" class="glass-form">
 
-    <hr>
+        <section class="form-section animate-up">
+            <div class="floating-label">
+                <input type="text" formName="nombre" placeholder=" " id="nombre">
+                <label for="nombre">Nombre de la creación</label>
+            </div>
 
-    <h3>Ingredientes</h3>
-    <div formArrayName="ingredientes">
-      <table class="chef-table">
-        <thead>
-          <tr>
-            <th>Insumo</th>
-            <th>Cantidad (gr/ml)</th>
-            <th>Costo Parcial</th>
-            <th>Acción</th>
-          </tr>
-        </thead>
-        <tbody>
-          @for (ing of ingredientes.controls; track $index) {
-            <tr [formGroupName]="$index">
-              <td>
-                <select formControlName="insumo_id" (change)="onIngredienteChange($index)">
-                  <option value="">Seleccionar...</option>
-                  @for (insumo of insumosDisponibles; track insumo.id) {
-                    <option [value]="insumo.id">{{ insumo.nombre }} (S/ {{insumo.costo_unitario_uso}}/{{insumo.unidad_uso}})</option>
-                  }
-                </select>
-              </td>
-              <td>
-                <input type="number" formControlName="cantidad" (input)="onIngredienteChange($index)">
-              </td>
-              <td>
-                <input type="text" formControlName="costo_parcial" readonly class="readonly-input">
-              </td>
-              <td>
-                <button type="button" class="btn-danger" (click)="removerIngrediente($index)">Eliminar</button>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
+            <div class="counter-container">
+                <label>Porciones:</label>
+                <div class="counter-controls">
+                    <button type="button" (click)="ajustarPorciones(-1)" [disabled]="porcionesActuales <= 1">-</button>
 
-    <button type="button" class="btn-secondary" (click)="agregarIngrediente()">+ Añadir Ingrediente</button>
+                    <span>{{ porcionesActuales }}</span>
 
-    <div class="summary-box">
-      <div class="total-row">
-        <span>Costo Total Batch:</span>
-        <span class="price">S/ {{ costoTotalReceta.toFixed(2) }}</span>
-      </div>
-      <div class="total-row highlight">
-        <span>Costo por Porción:</span>
-        <span class="price">S/ {{ (costoTotalReceta / recetaForm.get('porciones')?.value!).toFixed(2) }}</span>
-      </div>
-    </div>
+                    <button type="button" (click)="ajustarPorciones(1)">+</button>
+                </div>
+            </div>
+        </section>
 
-    <button type="submit" [disabled]="recetaForm.invalid" class="btn-primary">Finalizar Receta</button>
-  </form>
+        <section class="ingredients-list animate-up-delay-1">
+            <div class="list-header">
+                <h3>Ingredientes</h3>
+                <button type="button" class="btn-add-circle" (click)="agregarIngrediente()">+</button>
+            </div>
+
+            <div formArrayName="ingredientes" class="cards-stack">
+                @for (ing of ingredientes.controls; track $index) {
+                <div [formGroupName]="$index" class="ingredient-card animate-pop">
+                    <div class="card-body">
+                        <select formControlName="insumo_id" (change)="onIngredienteChange($index)">
+                            <option value="">Seleccionar Insumo</option>
+                            @for (i of insumosDisponibles; track i.id) {
+                            <option [value]="i.id">{{ i.nombre }}</option>
+                            }
+                        </select>
+
+                        <div class="card-inputs">
+                            <div class="input-with-unit">
+                                <input type="number" formControlName="cantidad" (input)="onIngredienteChange($index)"
+                                    placeholder="0">
+                                <small>gr/ml</small>
+                            </div>
+                            <div class="price-tag">
+                                S/ {{ ing.get('costo_parcial')?.value }}
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-remove" (click)="removerIngrediente($index)">×</button>
+                </div>
+                }
+            </div>
+        </section>
+
+        <footer class="sticky-footer">
+            <div class="cost-summary">
+                <div class="summary-item">
+                    <small>Total Lote</small>
+                    <strong>S/ {{ costoTotalReceta | number:'1.2-2' }}</strong>
+                </div>
+                <div class="summary-item highlight">
+                    <small>Por Porción</small>
+                    <strong>S/ {{ (costoTotalReceta / recetaForm.get('porciones')?.value!) | number:'1.2-2' }}</strong>
+                </div>
+            </div>
+            <button type="submit" [disabled]="recetaForm.invalid" class="btn-submit-main">
+                Guardar Receta
+            </button>
+        </footer>
+    </form>
 </div>
