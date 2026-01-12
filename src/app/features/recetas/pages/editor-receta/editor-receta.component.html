@@ -1,1 +1,70 @@
-<p>editor-receta works!</p>
+<div class="container">
+  <h2>Crear Nueva Receta</h2>
+
+  <form [formGroup]="recetaForm" (ngSubmit)="guardarReceta()" class="chef-form">
+    <div class="header-recipe">
+      <div class="form-group">
+        <label>Nombre del Plato:</label>
+        <input type="text" formControlName="nombre" placeholder="Ej: Ceviche de Pescado">
+      </div>
+      <div class="form-group">
+        <label>N° de Porciones:</label>
+        <input type="number" formControlName="porciones" (input)="calcularCostoTotal()">
+      </div>
+    </div>
+
+    <hr>
+
+    <h3>Ingredientes</h3>
+    <div formArrayName="ingredientes">
+      <table class="chef-table">
+        <thead>
+          <tr>
+            <th>Insumo</th>
+            <th>Cantidad (gr/ml)</th>
+            <th>Costo Parcial</th>
+            <th>Acción</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (ing of ingredientes.controls; track $index) {
+            <tr [formGroupName]="$index">
+              <td>
+                <select formControlName="insumo_id" (change)="onIngredienteChange($index)">
+                  <option value="">Seleccionar...</option>
+                  @for (insumo of insumosDisponibles; track insumo.id) {
+                    <option [value]="insumo.id">{{ insumo.nombre }} (S/ {{insumo.costo_unitario_uso}}/{{insumo.unidad_uso}})</option>
+                  }
+                </select>
+              </td>
+              <td>
+                <input type="number" formControlName="cantidad" (input)="onIngredienteChange($index)">
+              </td>
+              <td>
+                <input type="text" formControlName="costo_parcial" readonly class="readonly-input">
+              </td>
+              <td>
+                <button type="button" class="btn-danger" (click)="removerIngrediente($index)">Eliminar</button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <button type="button" class="btn-secondary" (click)="agregarIngrediente()">+ Añadir Ingrediente</button>
+
+    <div class="summary-box">
+      <div class="total-row">
+        <span>Costo Total Batch:</span>
+        <span class="price">S/ {{ costoTotalReceta.toFixed(2) }}</span>
+      </div>
+      <div class="total-row highlight">
+        <span>Costo por Porción:</span>
+        <span class="price">S/ {{ (costoTotalReceta / recetaForm.get('porciones')?.value!).toFixed(2) }}</span>
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="recetaForm.invalid" class="btn-primary">Finalizar Receta</button>
+  </form>
+</div>

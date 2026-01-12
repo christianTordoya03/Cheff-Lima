@@ -24,7 +24,7 @@ export class InsumosService {
    */
   async createInsumo(insumo: Insumo) {
     const { data: { user } } = await this.supabase.auth.getUser();
-    
+
     return await this.supabase
       .from('insumos')
       .insert({
@@ -32,4 +32,18 @@ export class InsumosService {
         user_id: user?.id
       });
   }
+
+  async updateInsumo(id: string, insumo: Insumo) {
+    return await this.supabase
+      .from('insumos')
+      .update({ ...insumo })
+      .eq('id', id);
+  }
+
+  async deleteInsumo(id: string) {
+  return await this.supabase
+    .from('insumos')
+    .delete()
+    .eq('id', id);
+}
 }
