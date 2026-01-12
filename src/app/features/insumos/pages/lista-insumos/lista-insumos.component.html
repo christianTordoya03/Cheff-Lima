@@ -1,0 +1,123 @@
+<div class="container">
+  <h2>Gestión de Insumos</h2>
+
+  <form [formGroup]="insumoForm" (ngSubmit)="guardarInsumo()" class="chef-form">
+    <div class="form-group">
+      <label>Nombre del Insumo:</label>
+      <input
+        type="text"
+        formControlName="nombre"
+        (input)="detectarProducto($event)"
+        placeholder="Ej: Limón Piurano"
+      />
+      @if (mensajeInteligente) {
+      <small class="smart-tag">{{ mensajeInteligente }}</small>
+      }
+    </div>
+
+    <div class="yield-calculator">
+      <div class="form-group">
+        <label>Peso Bruto (PB):</label>
+        <div class="input-unit">
+          <input type="number" #cantBruta placeholder="Total" />
+          <select formControlName="unidad_medida">
+            <option value="kg">kg</option>
+            <option value="un">un</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Prod. Utilizable (PU):</label>
+        <div class="input-unit">
+          <input
+            type="number"
+            #cantUtil
+            (input)="calcularDesdeUtil(cantBruta.value, cantUtil.value)"
+            placeholder="Cantidad limpia"
+          />
+          <select formControlName="unidad_uso">
+            <option value="gr">gr</option>
+            <option value="ml">ml</option>
+            <option value="un">un</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>Peso de Merma (PM):</label>
+        <div class="input-unit">
+          <input
+            type="number"
+            #cantMerma
+            (input)="calcularDesdeMerma(cantBruta.value, cantMerma.value)"
+            placeholder="Desperdicio"
+          />
+          <span class="unit-label">gr</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label>Precio Pagado (S/):</label>
+        <input
+          type="number"
+          formControlName="precio_compra"
+          placeholder="0.00"
+        />
+      </div>
+
+      <div class="form-group">
+        <label>% Merma (Calculado):</label>
+        <input
+          type="number"
+          formControlName="porcentaje_merma"
+          readonly
+          class="readonly-input"
+        />
+      </div>
+    </div>
+
+    <button type="submit" [disabled]="insumoForm.invalid" class="btn-primary">
+      Guardar Insumo
+    </button>
+  </form>
+
+  <section class="list-section">
+    <h3>Inventario Actual</h3>
+    <table class="chef-table">
+      <thead>
+        <tr>
+          <th>Nombre</th>
+          <th>Unidad Compra</th>
+          <th>Precio Mercado</th>
+          <th>% Merma</th>
+          <th class="text-success">Costo Real (Limpio)</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (item of insumos; track item.id) {
+        <tr>
+          <td>{{ item.nombre }}</td>
+          <td>{{ item.unidad_medida }}</td>
+          <td>S/ {{ item.precio_compra }}</td>
+          <td>{{ item.porcentaje_merma }}%</td>
+          <td class="font-bold">
+            S/
+            {{
+              (item.precio_compra / (1 - item.porcentaje_merma / 100)).toFixed(
+                2
+              )
+            }}
+          </td>
+        </tr>
+        } @empty {
+        <tr>
+          <td colspan="5" class="text-center">No hay insumos registrados.</td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </section>
+</div>
