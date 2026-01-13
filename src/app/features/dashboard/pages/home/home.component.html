@@ -1,18 +1,31 @@
-<div class="home-container">
-  <h1>👋 ¡Hola de nuevo, Chef!</h1>
-  <p>Bienvenido a tu centro de control para <strong>ChefApp-Lima</strong>.</p>
-  
-  <div class="stats-grid" style="display: flex; gap: 20px; margin-top: 20px;">
-    <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-      <h3>Insumos</h3>
-      <p>Gestiona tus precios de Unicachi y Terminal Pesquero.</p>
-      <button routerLink="/insumos">Ir a Insumos</button>
+<div class="mobile-home animate-up">
+  <header class="home-header">
+    <h1>👋 ¡Hola, Chef!</h1>
+    <p>¿Qué receta costearemos hoy?</p>
+  </header>
+
+  <div class="stats-carousel">
+    <div class="stat-pill"><strong>{{ insumosCount || 0 }}</strong> Insumos</div>
+    <div class="stat-pill"><strong>{{ recetasCount || 0 }}</strong> Recetas</div>
+  </div>
+
+  <div class="quick-actions">
+    <div class="action-card btn-tap" routerLink="/insumos">
+      <div class="icon">🥬</div>
+      <div class="text">
+        <h3>Insumos</h3>
+        <p>Precios de Unicachi</p>
+      </div>
+      <span class="arrow">→</span>
     </div>
-    
-    <div class="card" style="padding: 20px; border: 1px solid #ddd; border-radius: 8px;">
-      <h3>Recetario</h3>
-      <p>Calcula el costo real de tus platos con merma incluida.</p>
-      <button routerLink="/recetas">Ir a Recetas</button>
+
+    <div class="action-card btn-tap primary" routerLink="/recetas">
+      <div class="icon">📖</div>
+      <div class="text">
+        <h3>Recetario</h3>
+        <p>Calcular Merma</p>
+      </div>
+      <span class="arrow">→</span>
     </div>
   </div>
 </div>

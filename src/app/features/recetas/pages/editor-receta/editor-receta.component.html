@@ -1,80 +1,55 @@
-<div class="mobile-container">
-    <header class="app-header">
-        <div class="header-content">
-            <span class="back-icon" routerLink="/dashboard">←</span>
-            <h1>Nuevo Plato</h1>
-            <div class="user-badge">👨‍🍳</div>
-        </div>
+<div class="recipe-editor animate-up">
+    <header class="mobile-nav">
+        <button class="back-btn" routerLink="/dashboard">←</button>
+        <h2>Nuevo Plato</h2>
+        <div class="chef-icon">👨‍🍳</div>
     </header>
 
-    <form [formGroup]="recetaForm" (ngSubmit)="guardarReceta()" class="glass-form">
-
-        <section class="form-section animate-up">
-            <div class="floating-label">
-                <input type="text" formName="nombre" placeholder=" " id="nombre">
-                <label for="nombre">Nombre de la creación</label>
-            </div>
-
-            <div class="counter-container">
-                <label>Porciones:</label>
-                <div class="counter-controls">
+    <form [formGroup]="recetaForm" (ngSubmit)="guardarReceta()" class="mobile-form">
+        <div class="card header-card">
+            <input type="text" formControlName="nombre" placeholder="Nombre del Plato">
+            <div class="portion-counter">
+                <label>Porciones</label>
+                <div class="controls">
                     <button type="button" (click)="ajustarPorciones(-1)" [disabled]="porcionesActuales <= 1">-</button>
-
                     <span>{{ porcionesActuales }}</span>
-
                     <button type="button" (click)="ajustarPorciones(1)">+</button>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <section class="ingredients-list animate-up-delay-1">
-            <div class="list-header">
-                <h3>Ingredientes</h3>
-                <button type="button" class="btn-add-circle" (click)="agregarIngrediente()">+</button>
-            </div>
+        <div class="list-header">
+            <h3>Ingredientes</h3>
+            <button type="button" class="btn-add-pill" (click)="agregarIngrediente()">+ Añadir</button>
+        </div>
 
-            <div formArrayName="ingredientes" class="cards-stack">
-                @for (ing of ingredientes.controls; track $index) {
-                <div [formGroupName]="$index" class="ingredient-card animate-pop">
-                    <div class="card-body">
-                        <select formControlName="insumo_id" (change)="onIngredienteChange($index)">
-                            <option value="">Seleccionar Insumo</option>
-                            @for (i of insumosDisponibles; track i.id) {
-                            <option [value]="i.id">{{ i.nombre }}</option>
-                            }
-                        </select>
-
-                        <div class="card-inputs">
-                            <div class="input-with-unit">
-                                <input type="number" formControlName="cantidad" (input)="onIngredienteChange($index)"
-                                    placeholder="0">
-                                <small>gr/ml</small>
-                            </div>
-                            <div class="price-tag">
-                                S/ {{ ing.get('costo_parcial')?.value }}
-                            </div>
-                        </div>
+        <div formArrayName="ingredientes" class="ing-stack">
+            @for (ing of ingredientes.controls; track $index) {
+            <div [formGroupName]="$index" class="ing-card">
+                <select formControlName="insumo_id" (change)="onIngredienteChange($index)">
+                    <option value="">Elegir Insumo</option>
+                    @for (i of insumosDisponibles; track i.id) {
+                    <option [value]="i.id">{{ i.nombre }}</option>
+                    }
+                </select>
+                <div class="ing-footer">
+                    <div class="qty">
+                        <input type="number" formControlName="cantidad" (input)="onIngredienteChange($index)">
+                        <small>gr/ml</small>
                     </div>
-                    <button type="button" class="btn-remove" (click)="removerIngrediente($index)">×</button>
+                    <div class="price">S/ {{ ing.get('costo_parcial')?.value }}</div>
+                    <button type="button" class="btn-del" (click)="removerIngrediente($index)">🗑️</button>
                 </div>
-                }
             </div>
-        </section>
+            }
+        </div>
 
-        <footer class="sticky-footer">
-            <div class="cost-summary">
-                <div class="summary-item">
-                    <small>Total Lote</small>
-                    <strong>S/ {{ costoTotalReceta | number:'1.2-2' }}</strong>
-                </div>
-                <div class="summary-item highlight">
-                    <small>Por Porción</small>
-                    <strong>S/ {{ (costoTotalReceta / recetaForm.get('porciones')?.value!) | number:'1.2-2' }}</strong>
-                </div>
+        <footer class="floating-summary">
+            <div class="costs">
+                <div class="item">Total: <strong>S/ {{ costoTotalReceta | number:'1.2-2' }}</strong></div>
+                <div class="item highlight">Por ración: <strong>S/ {{ (costoTotalReceta / porcionesActuales) | number:'1.2-2' }}</strong></div>
             </div>
-            <button type="submit" [disabled]="recetaForm.invalid" class="btn-submit-main">
-                Guardar Receta
-            </button>
+            <button type="submit" [disabled]="recetaForm.invalid" class="btn-save btn-tap">Guardar Receta</button>
         </footer>
     </form>
 </div>

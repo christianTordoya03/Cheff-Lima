@@ -1,15 +1,26 @@
-<div class="login-container">
-  <h2>Iniciar Sesión</h2>
-  <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-    <input type="email" formControlName="email" placeholder="Correo">
-    <input type="password" formControlName="password" placeholder="Contraseña">
-    <button type="submit" [disabled]="loginForm.invalid">Entrar</button>
-  </form>
-  <p>¿No tienes cuenta? <a routerLink="/auth/register">Regístrate aquí</a></p>
-</div>
+<div class="auth-wrapper animate-up">
+  <div class="glass-card">
+    <div class="brand-logo">🔪 <h2>Cheff Lima</h2></div>
+    
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
+      <div class="input-group">
+        <input type="email" formControlName="email" placeholder=" " id="email">
+        <label for="email">Correo Electrónico</label>
+      </div>
+      
+      <div class="input-group">
+        <input type="password" formControlName="password" placeholder=" " id="pass">
+        <label for="pass">Contraseña</label>
+      </div>
 
-<div style="margin-top: 10px;">
-  <button type="button" (click)="onForgotPassword()" style="background: none; border: none; color: blue; text-decoration: underline; cursor: pointer;">
-    Olvidé mi contraseña
-  </button>
+      <button type="submit" class="btn-primary-mobile btn-tap" [disabled]="loginForm.invalid">
+        Entrar a mi Cocina
+      </button>
+    </form>
+
+    <div class="auth-footer">
+      <button (click)="onForgotPassword()" class="link-btn">¿Olvidaste tu clave?</button>
+      <p>¿Nuevo aquí? <a routerLink="/auth/register">Regístrate</a></p>
+    </div>
+  </div>
 </div>
