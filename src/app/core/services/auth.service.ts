@@ -66,4 +66,8 @@ export class AuthService {
       password: newPass,
     });
   }
+
+  async getCurrentUser() {
+  return await this.supabase.auth.getUser();
+}
 }

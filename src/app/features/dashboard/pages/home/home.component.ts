@@ -32,6 +32,6 @@ export class HomeComponent implements OnInit {
   }
 
   irARecetario() {
-    this.router.navigate(['/recetas']);
+    this.router.navigate(['/nuevaReceta']);
   }
 }

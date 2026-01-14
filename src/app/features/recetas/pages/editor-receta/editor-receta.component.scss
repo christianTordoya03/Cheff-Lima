@@ -1,86 +1,91 @@
 .recipe-editor {
-  padding: 24px 16px 180px;
-  background: #0d0d0d; // Fondo oscuro base
+  padding: 24px 16px 140px;
+  background: #0d0d0d;
   min-height: 100vh;
   color: #fff;
-  max-width: 650px; // Evita que se descuadre en PC
+}
+
+.editor-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: 1200px;
   margin: 0 auto;
+
+  @media (min-width: 1024px) {
+    grid-template-columns: 1.5fr 1fr; // Dos columnas en PC
+  }
 }
 
-.inventory-header {
-  margin-bottom: 30px;
-  .header-content { display: flex; align-items: center; gap: 15px; }
-  h1 { font-size: 1.8rem; font-weight: 800; margin: 0; }
-  .btn-back { background: none; border: none; color: white; font-size: 1.5rem; }
-}
-
-// CORRECCIÓN DE INPUTS: Fuera el gris feo, bienvenido el cristal
+// INPUTS GLASS: Sin fondos blancos, solo transparencia
 .glass-input {
   width: 100%;
   padding: 14px;
-  background: rgba(255, 255, 255, 0.05) !important; // Casi negro translúcido
+  background: rgba(255, 255, 255, 0.03) !important;
   border: 1px solid rgba(255, 255, 255, 0.1) !important;
-  border-radius: 14px;
+  border-radius: 12px;
   color: #fff !important;
-  font-size: 1rem;
   
-  &:focus { outline: none; border-color: #ff6b00; background: rgba(255, 255, 255, 0.08) !important; }
+  &:focus { border-color: #ff6b00; outline: none; background: rgba(255, 255, 255, 0.06) !important; }
+  option { background: #1a1a1a; color: #fff; } // Fix para el select
 }
 
-label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 8px; font-weight: 600; }
-
-.main-config {
-  padding: 24px;
-  margin-bottom: 30px;
-  .portions-row {
-    margin-top: 20px;
-    display: flex; justify-content: space-between; align-items: center;
-  }
-}
+.main-info { padding: 24px; margin-bottom: 20px; }
 
 .stepper-glass {
-  display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05);
+  display: flex; align-items: center; gap: 12px; background: rgba(255,255,255,0.05);
   padding: 8px 16px; border-radius: 16px;
   button { width: 35px; height: 35px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: #fff; }
-  input { width: 40px; text-align: center; background: transparent; border: none; color: #ff6b00; font-size: 1.4rem; font-weight: 800; }
-  .unit { font-size: 0.7rem; color: #666; font-weight: 800; text-transform: uppercase; }
+  input { width: 45px; text-align: center; background: transparent; border: none; color: #ff6b00; font-size: 1.4rem; font-weight: 800; }
 }
 
-// Tarjetas de Ingredientes (Mismo estilo que Insumos)
-.ingredient-item {
+// TARJETAS (ADN de Insumos)
+.insumo-card {
   margin-bottom: 16px;
   padding: 20px;
-  .item-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px; }
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  
+  .card-grid-editor { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 12px; }
 }
 
-.item-footer {
+.card-footer-editor {
   display: flex; justify-content: space-between; align-items: center;
   border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;
-  .subtotal { font-size: 0.9rem; strong { color: #ff6b00; } }
-  .btn-remove-red { background: none; border: none; color: #ff4757; font-weight: 700; font-size: 0.8rem; }
+  .subtotal strong { color: #ff6b00; }
+  .btn-delete-red { background: none; border: none; color: #ff4757; font-weight: 700; }
 }
 
-// Resumen Flotante (Bottom Sheet)
-.floating-summary {
-  position: fixed; bottom: 85px; left: 16px; right: 16px;
-  max-width: 618px; margin: 0 auto; // Alineado al ancho del editor en PC
-  padding: 24px; border-radius: 28px;
-  z-index: 1000;
-  background: rgba(18, 18, 18, 0.95);
-  border: 1px solid rgba(255,255,255,0.1);
-
-  .summary-content {
-    display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px;
-    .separator { width: 1px; height: 40px; background: rgba(255,255,255,0.1); }
-    .summary-block {
-      text-align: center;
-      small { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 4px; }
-      .value { font-size: 1.2rem; font-weight: 800; }
-      &.highlight .value-accent { color: #ff6b00; font-size: 1.6rem; font-weight: 800; text-shadow: 0 0 15px rgba(255, 107, 0, 0.3); }
-    }
+// RESUMEN FLOTANTE Y ASIDE
+.summary-aside {
+  @media (min-width: 1024px) {
+    position: sticky; top: 24px; // Se queda pegado al bajar en PC
   }
 }
 
+.floating-summary {
+  padding: 24px;
+  border-radius: 28px;
+  background: rgba(20, 20, 20, 0.9);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  .summary-details {
+    display: flex; justify-content: space-around; align-items: center; margin-bottom: 24px;
+    .v-divider { width: 1px; height: 40px; background: rgba(255,255,255,0.1); }
+    .detail-item {
+      text-align: center;
+      small { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; }
+      span { font-weight: 800; font-size: 1.2rem; }
+      &.highlight .orange-val { color: #ff6b00; font-size: 1.8rem; text-shadow: 0 0 15px rgba(255, 107, 0, 0.3); }
+    }
+  }
+
+  @media (max-width: 1023px) {
+    position: fixed; bottom: 85px; left: 16px; right: 16px; z-index: 1000;
+  }
+}
+
+// BOTÓN NARANJA PRO
 .btn-primary-glow {
   width: 100%; padding: 18px; border-radius: 18px; border: none;
   background: linear-gradient(135deg, #ff6b00, #ff4757);
@@ -88,5 +93,179 @@ label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 8px; font
   box-shadow: 0 8px 25px rgba(255, 107, 0, 0.4);
 }
 
-.btn-add-orange { background: none; border: none; color: #ff6b00; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
-.section-title { display: flex; justify-content: space-between; align-items: center; margin: 30px 0 15px; }
+.btn-add-orange { background: none; border: none; color: #ff6b00; font-weight: 800; cursor: pointer; }
+
+// Contenedor del formulario corregido
+.main-config {
+  background: rgba(255, 255, 255, 0.03); // Vidrio muy sutil
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 30px;
+
+  .input-glass-group {
+    margin-bottom: 20px;
+    
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.5); // Texto gris suave
+      margin-bottom: 8px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    // Los inputs ahora son oscuros y translúcidos
+    input.glass-input {
+      width: 100%;
+      padding: 14px 18px;
+      background: rgba(0, 0, 0, 0.2) !important; // Fondo negro translúcido
+      border: 1px solid rgba(255, 255, 255, 0.1) !important;
+      border-radius: 14px;
+      color: #fff !important;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.2);
+      }
+
+      &:focus {
+        outline: none;
+        border-color: #ff6b00 !important; // Naranja al enfocar
+        background: rgba(0, 0, 0, 0.4) !important;
+        box-shadow: 0 0 15px rgba(255, 107, 0, 0.1);
+      }
+    }
+  }
+}
+
+// Estilo para el Stepper (Porciones)
+.stepper-glass {
+  display: inline-flex;
+  align-items: center;
+  background: rgba(255, 255, 255, 0.05);
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  button {
+    width: 38px;
+    height: 38px;
+    border-radius: 12px;
+    border: none;
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 1.2rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:hover { background: #ff6b00; }
+  }
+
+  input {
+    width: 50px;
+    text-align: center;
+    background: transparent;
+    border: none;
+    color: #ff6b00; // El naranja que venimos usando
+    font-size: 1.4rem;
+    font-weight: 800;
+  }
+}
+
+.ingredient-item {
+  margin-bottom: 16px;
+  padding: 20px;
+  background: rgba(255, 255, 255, 0.03); // Vidrio oscuro
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  
+  .item-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; // El selector es más ancho que la cantidad
+    gap: 15px;
+    margin-bottom: 15px;
+
+    @media (max-width: 480px) {
+      grid-template-columns: 1fr; // En móvil se apilan
+    }
+  }
+}
+
+// Estilo para los inputs dentro de la tarjeta
+.glass-input {
+  width: 100%;
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.2) !important; // Fondo negro translúcido
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-radius: 12px;
+  color: #fff !important;
+  font-size: 0.95rem;
+
+  &:focus {
+    border-color: #ff6b00 !important;
+    background: rgba(0, 0, 0, 0.4) !important;
+  }
+}
+
+.item-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 12px;
+
+  .cost-badge {
+    span { font-size: 0.8rem; color: #888; margin-right: 6px; }
+    strong { color: #ff6b00; font-size: 1.1rem; font-weight: 800; }
+  }
+
+  .btn-delete-text {
+    background: none;
+    border: none;
+    color: #ff4757; // Rojo suave para eliminar
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+}
+
+.btn-add-orange {
+  background: none;
+  border: none;
+  color: #ff6b00;
+  font-weight: 800;
+  font-size: 0.9rem;
+  padding: 8px 0;
+}
+
+@media (max-width: 600px) {
+  .recetas-grid {
+    grid-template-columns: 1fr; // Una sola columna obligatoria
+    gap: 15px;
+  }
+
+  .receta-card {
+    padding: 16px; // Menos padding para ver más contenido
+    
+    .card-header h3 {
+      font-size: 1.2rem;
+    }
+  }
+
+  .card-metrics-glass {
+    padding: 12px; // Métricas más apretadas
+    
+    .metric span {
+      font-size: 0.95rem;
+    }
+    
+    .metric.highlight .orange-text {
+      font-size: 1.1rem; // Evitamos que el costo x plato rompa el layout
+    }
+  }
+}

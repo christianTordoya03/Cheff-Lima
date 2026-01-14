@@ -1,0 +1,76 @@
+<div class="recetario-container animate-up">
+  <header class="inventory-header">
+    <div class="header-content">
+      <h1>Recetario 📁</h1>
+      <p>Control de costos y rentabilidad</p>
+    </div>
+    @if (!cargando) {
+    <button class="btn-add-pill btn-tap" routerLink="/nuevaReceta">+ Nuevo Plato</button>
+    }
+  </header>
+
+  @if (cargando) {
+  <div class="loading-container">
+    <div class="spinner-orange"></div>
+    <p>Consultando cocina...</p>
+  </div>
+  }
+  @else {
+  <div class="recetas-grid">
+    @for (receta of recetas; track receta.id) {
+    <div class="receta-card glass-card animate-up">
+      <div class="card-header">
+        <div class="title-group">
+          <h3>{{ receta.nombre_plato }}</h3>
+          <span class="portions-tag">{{ receta.porciones }} {{ receta.porciones === 1 ? 'PORCIÓN' : 'PORCIONES'
+            }}</span>
+        </div>
+        <div class="recipe-icon">🍳</div>
+      </div>
+
+      <div class="card-metrics-glass">
+        <div class="metric">
+          <small>COSTO BATCH</small>
+          <span>S/ {{ receta.costo_total | number:'1.2-2' }}</span>
+        </div>
+        <div class="v-divider"></div>
+        <div class="metric highlight">
+          <small>COSTO X PLATO</small>
+          <span class="orange-text">S/ {{ (receta.costo_total / receta.porciones) | number:'1.2-2' }}</span>
+        </div>
+      </div>
+
+      <div class="card-footer-actions">
+        <button class="btn-action-outline edit" [routerLink]="['/editarReceta', receta.id]">
+          ✏️ <span>Editar</span>
+        </button>
+        <button class="btn-action-outline delete" (click)="prepararEliminacion(receta.id)">
+          🗑️ <span>Borrar</span>
+        </button>
+      </div>
+    </div>
+    } @empty {
+    <div class="empty-state-container">
+      <div class="premium-glass-card animate-up">
+        <div class="glow-icon-wrapper">
+          <div class="glow-effect"></div>
+          <span class="main-icon">👨‍🍳📋</span>
+        </div>
+
+        <h2>Tu recetario está vacío</h2>
+        <p>Comienza a digitalizar tus costos y maximizar tu rentabilidad hoy mismo.</p>
+
+        <button class="btn-neon-glow btn-tap" routerLink="/nuevaReceta">
+          Crear mi primera receta
+        </button>
+      </div>
+    </div>
+    }
+  </div>
+  }
+</div>
+
+<app-confirm-modal [visible]="showModal" [titulo]="'¿Eliminar Plato?'"
+  [mensaje]="'Esta receta y sus cálculos de costos se borrarán permanentemente.'" [textoConfirmar]="'Eliminar Receta'"
+  (confirmar)="confirmarEliminacion()" (cancelar)="cerrarModal()">
+</app-confirm-modal>

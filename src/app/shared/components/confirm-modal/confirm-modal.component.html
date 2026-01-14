@@ -1,0 +1,28 @@
+@if (visible) {
+  <div class="modal-overlay animate-fade" (click)="onCancel()">
+    <div class="glass-card modal-content animate-up" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-icon" [class]="tipo">
+          {{ tipo === 'danger' ? '🗑️' : '⚠️' }}
+        </div>
+        <h2>{{ titulo }}</h2>
+      </div>
+
+      <div class="modal-body">
+        <p>{{ mensaje }}</p>
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn-cancel btn-tap" (click)="onCancel()">
+          Cancelar
+        </button>
+        <button type="button" 
+                class="btn-confirm btn-tap" 
+                [class.btn-danger]="tipo === 'danger'"
+                (click)="onConfirm()">
+          {{ textoConfirmar }}
+        </button>
+      </div>
+    </div>
+  </div>
+}

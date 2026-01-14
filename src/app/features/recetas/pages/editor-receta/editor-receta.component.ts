@@ -1,15 +1,17 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
-import { RouterModule } from '@angular/router'; 
+import { RouterModule, ActivatedRoute, Router } from '@angular/router'; 
 import { InsumosService } from '../../../../core/services/insumos.service';
 import { RecetasService } from '../../../../core/services/recetas.service';
 import { Insumo } from '../../../../core/interfaces/insumo';
+import { AuthService } from '../../../../core/services/auth.service';
+import { ConfirmModalComponent } from '../../../../shared/components/confirm-modal/confirm-modal.component';
 
 @Component({
   selector: 'app-editor-receta',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule, ConfirmModalComponent],
   templateUrl: './editor-receta.component.html',
   styleUrl: './editor-receta.component.scss'
 })
@@ -17,10 +19,15 @@ export class EditorRecetaComponent implements OnInit {
   private fb = inject(FormBuilder);
   private insumosService = inject(InsumosService);
   private recetasService = inject(RecetasService);
+  private authService = inject(AuthService);
+  private route = inject(ActivatedRoute);
+  private router = inject(Router);
 
-  // CORRECCIONES DE NOMBRES PARA EL HTML
   insumos: Insumo[] = []; 
   esEdicion = false; 
+  recetaId: string | null = null;
+  showModalEliminar = false;
+  indiceAEliminar: number | null = null;
 
   recetaForm = this.fb.group({
     nombre: ['', Validators.required],
@@ -29,13 +36,19 @@ export class EditorRecetaComponent implements OnInit {
     ingredientes: this.fb.array([])
   });
 
-  // CORRECCIÓN NG1: Getter con el nombre exacto usado en el @for
   get ingredientesForm() {
     return this.recetaForm.get('ingredientes') as FormArray;
   }
 
-  ngOnInit() {
-    this.cargarInsumos();
+  async ngOnInit() {
+    await this.cargarInsumos();
+    
+    // Verificar si recibimos un ID por la URL para editar
+    this.recetaId = this.route.snapshot.paramMap.get('id');
+    if (this.recetaId) {
+      this.esEdicion = true;
+      await this.cargarDatosReceta(this.recetaId);
+    }
   }
 
   async cargarInsumos() {
@@ -43,14 +56,60 @@ export class EditorRecetaComponent implements OnInit {
     if (data) this.insumos = data;
   }
 
-  agregarIngrediente() {
-    const ingredienteForm = this.fb.group({
-      insumo_id: ['', Validators.required],
-      cantidad: [0, [Validators.required, Validators.min(0.001)]],
-      costo: [0] 
-    });
-    this.ingredientesForm.push(ingredienteForm);
+  pedirConfirmacionEliminar(index: number) {
+    this.indiceAEliminar = index;
+    this.showModalEliminar = true;
   }
+
+  confirmarEliminacion() {
+    if (this.indiceAEliminar !== null) {
+      this.removerIngrediente(this.indiceAEliminar);
+    }
+    this.cerrarModal();
+  }
+
+  cerrarModal() {
+    this.showModalEliminar = false;
+    this.indiceAEliminar = null;
+  }
+
+  async cargarDatosReceta(id: string) {
+    const { data } = await this.recetasService.getRecetaById(id);
+    if (data) {
+      this.recetaForm.patchValue({
+        nombre: data.nombre_plato,
+        porciones: data.porciones,
+        costo_total: data.costo_total
+      });
+
+      this.ingredientesForm.clear();
+      data.receta_detalles.forEach((detalle: any) => {
+        this.ingredientesForm.push(this.fb.group({
+          insumo_id: [detalle.insumo_id, Validators.required],
+          cantidad: [detalle.cantidad_utilizada, [Validators.required, Validators.min(0.001)]],
+          costo: [detalle.costo_calculado]
+        }));
+      });
+    }
+  }
+
+  agregarIngrediente() {
+  const ingredienteForm = this.fb.group({
+    insumo_id: ['', Validators.required],
+    cantidad: [0, [Validators.required, Validators.min(0.001)]],
+    costo: [0] 
+  });
+  this.ingredientesForm.push(ingredienteForm);
+
+  // Scroll automático al último elemento creado
+  setTimeout(() => {
+    const items = document.querySelectorAll('.ingredient-item');
+    const ultimoItem = items[items.length - 1];
+    if (ultimoItem) {
+      ultimoItem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  }, 100);
+}
 
   removerIngrediente(index: number) {
     this.ingredientesForm.removeAt(index);
@@ -60,14 +119,14 @@ export class EditorRecetaComponent implements OnInit {
   ajustarPorciones(cantidad: number) {
     const control = this.recetaForm.get('porciones');
     if (control) {
-      const nuevoValor = (control.value || 1) + cantidad;
+      const nuevoValor = (Number(control.value) || 1) + cantidad;
       if (nuevoValor >= 1) {
         control.setValue(nuevoValor);
+        this.actualizarCalculos();
       }
     }
   }
 
-  // CORRECCIÓN NG9: Método que pide el (input) y (change) del HTML
   actualizarCalculos() {
     let total = 0;
     this.ingredientesForm.controls.forEach((grupo) => {
@@ -76,6 +135,7 @@ export class EditorRecetaComponent implements OnInit {
       const insumo = this.insumos.find(i => i.id === id);
 
       if (insumo) {
+        // Usamos el costo_unitario_uso que ya calculamos en el servicio de insumos
         const costoParcial = cant * (insumo.costo_unitario_uso || 0);
         grupo.get('costo')?.setValue(costoParcial, { emitEvent: false });
         total += costoParcial;
@@ -84,7 +144,6 @@ export class EditorRecetaComponent implements OnInit {
     this.recetaForm.get('costo_total')?.setValue(total);
   }
 
-  // CORRECCIÓN NG3: Getter para simplificar el cálculo matemático en el HTML
   get costoPorPlato(): number {
     const total = this.recetaForm.get('costo_total')?.value || 0;
     const porciones = this.recetaForm.get('porciones')?.value || 1;
@@ -92,26 +151,47 @@ export class EditorRecetaComponent implements OnInit {
   }
 
   async guardarReceta() {
-    if (this.recetaForm.invalid) return;
+    if (this.recetaForm.invalid || this.ingredientesForm.length === 0) {
+      alert('Por favor, completa los datos y añade al menos un ingrediente.');
+      return;
+    }
+
     try {
-      const form = this.recetaForm.getRawValue();
-      const cabecera = {
-        nombre: form.nombre,
-        porciones: form.porciones,
-        costo_total: form.costo_total
+      const formValue = this.recetaForm.getRawValue();
+      const { data: { user } } = await this.authService.getCurrentUser();
+      
+      if (!user) throw new Error('Usuario no autenticado');
+      
+      const recetaData = {
+        nombre_plato: formValue.nombre,
+        precio_venta: 0,
+        metodo_calculo: 'exacto',
+        user_id: user.id,
+        porciones: formValue.porciones,
+        costo_total: formValue.costo_total
       };
-      const detalle = form.ingredientes.map((ing: any) => ({
+
+      const detallesIngredientes = formValue.ingredientes.map((ing: any) => ({
         insumo_id: ing.insumo_id,
         cantidad_utilizada: ing.cantidad,
         costo_calculado: ing.costo
       }));
 
-      await this.recetasService.guardarRecetaCompleta(cabecera, detalle);
-      alert('✅ Receta guardada con éxito.');
-      this.recetaForm.reset({ porciones: 1, costo_total: 0 });
-      this.ingredientesForm.clear();
-    } catch (e: any) {
-      alert('❌ Error: ' + e.message);
+      let result;
+      if (this.esEdicion && this.recetaId) {
+        result = await this.recetasService.actualizarRecetaCompleta(this.recetaId, recetaData, detallesIngredientes);
+      } else {
+        result = await this.recetasService.guardarRecetaCompleta(recetaData, detallesIngredientes);
+      }
+
+      if (result.error) throw result.error;
+
+      alert(this.esEdicion ? '✅ ¡Receta actualizada!' : '✅ ¡Receta guardada!');
+      this.router.navigate(['/recetas']);
+      
+    } catch (error: any) {
+      console.error('Error al procesar:', error.message);
+      alert('❌ Error al procesar la receta.');
     }
   }
 }
