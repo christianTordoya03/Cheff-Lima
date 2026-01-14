@@ -1,0 +1,36 @@
+.layout-container {
+  display: flex;
+  min-height: 100vh;
+  background: #0d0d0d; // Fondo base oscuro
+  position: relative;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-x: hidden;
+  
+  // El fondo con gradiente que unifica todo el diseño
+  background: radial-gradient(circle at top right, rgba(255, 107, 0, 0.05), transparent 400px),
+              linear-gradient(135deg, #121212 0%, #080808 100%);
+}
+
+.page-wrapper {
+  padding: 0; // Dejamos que cada página maneje su padding interno
+  width: 100%;
+  max-width: 1400px; // Evita que en pantallas gigantes se estire demasiado
+  margin: 0 auto;
+}
+
+// AJUSTES RESPONSIVE
+@media (max-width: 768px) {
+  .layout-container {
+    flex-direction: column; // En móvil el sidebar ya no está al lado
+  }
+
+  .main-content {
+    padding-bottom: 75px; // Espacio vital para que el menú inferior no tape nada
+  }
+}

@@ -1,6 +1,7 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ReactiveFormsModule, FormBuilder, FormArray, Validators } from '@angular/forms';
+import { RouterModule } from '@angular/router'; 
 import { InsumosService } from '../../../../core/services/insumos.service';
 import { RecetasService } from '../../../../core/services/recetas.service';
 import { Insumo } from '../../../../core/interfaces/insumo';
@@ -8,7 +9,7 @@ import { Insumo } from '../../../../core/interfaces/insumo';
 @Component({
   selector: 'app-editor-receta',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterModule],
   templateUrl: './editor-receta.component.html',
   styleUrl: './editor-receta.component.scss'
 })
@@ -17,38 +18,20 @@ export class EditorRecetaComponent implements OnInit {
   private insumosService = inject(InsumosService);
   private recetasService = inject(RecetasService);
 
-  insumosDisponibles: Insumo[] = [];
-  costoTotalReceta = 0;
+  // CORRECCIONES DE NOMBRES PARA EL HTML
+  insumos: Insumo[] = []; 
+  esEdicion = false; 
 
   recetaForm = this.fb.group({
     nombre: ['', Validators.required],
     porciones: [1, [Validators.required, Validators.min(1)]],
+    costo_total: [0],
     ingredientes: this.fb.array([])
   });
 
-  get ingredientes() {
+  // CORRECCIÓN NG1: Getter con el nombre exacto usado en el @for
+  get ingredientesForm() {
     return this.recetaForm.get('ingredientes') as FormArray;
-  }
-
-  // Dentro de la clase EditorRecetaComponent
-
-  // Función para incrementar porciones de forma segura
-  ajustarPorciones(cantidad: number) {
-    const control = this.recetaForm.get('porciones');
-    if (control) {
-      const valorActual = control.value || 1;
-      const nuevoValor = valorActual + cantidad;
-      // Evitamos que las porciones sean menores a 1
-      if (nuevoValor >= 1) {
-        control.setValue(nuevoValor);
-        this.calcularCostoTotal();
-      }
-    }
-  }
-
-  // Getter para usar en el [disabled] del HTML de forma limpia
-  get porcionesActuales(): number {
-    return this.recetaForm.get('porciones')?.value || 1;
   }
 
   ngOnInit() {
@@ -57,65 +40,76 @@ export class EditorRecetaComponent implements OnInit {
 
   async cargarInsumos() {
     const { data } = await this.insumosService.getInsumos();
-    if (data) this.insumosDisponibles = data;
+    if (data) this.insumos = data;
   }
 
   agregarIngrediente() {
     const ingredienteForm = this.fb.group({
       insumo_id: ['', Validators.required],
       cantidad: [0, [Validators.required, Validators.min(0.001)]],
-      costo_parcial: [{ value: 0, disabled: true }]
+      costo: [0] 
     });
-    this.ingredientes.push(ingredienteForm);
+    this.ingredientesForm.push(ingredienteForm);
   }
 
-  // Corregido: Nombre coincide con el HTML
   removerIngrediente(index: number) {
-    this.ingredientes.removeAt(index);
-    this.calcularCostoTotal();
+    this.ingredientesForm.removeAt(index);
+    this.actualizarCalculos();
   }
 
-  onIngredienteChange(index: number) {
-    const grupo = this.ingredientes.at(index);
-    const id = grupo.get('insumo_id')?.value;
-    const cant = grupo.get('cantidad')?.value || 0;
-    const insumo = this.insumosDisponibles.find(i => i.id === id);
-
-    if (insumo) {
-      const parcial = cant * (insumo.costo_unitario_uso || 0);
-      grupo.get('costo_parcial')?.setValue(parcial.toFixed(2));
-      this.calcularCostoTotal();
+  ajustarPorciones(cantidad: number) {
+    const control = this.recetaForm.get('porciones');
+    if (control) {
+      const nuevoValor = (control.value || 1) + cantidad;
+      if (nuevoValor >= 1) {
+        control.setValue(nuevoValor);
+      }
     }
   }
 
-  // Corregido: Nombre coincide con el HTML
-  calcularCostoTotal() {
-    this.costoTotalReceta = this.ingredientes.controls.reduce((acc, ctrl) => {
-      return acc + parseFloat(ctrl.get('costo_parcial')?.value || 0);
-    }, 0);
+  // CORRECCIÓN NG9: Método que pide el (input) y (change) del HTML
+  actualizarCalculos() {
+    let total = 0;
+    this.ingredientesForm.controls.forEach((grupo) => {
+      const id = grupo.get('insumo_id')?.value;
+      const cant = grupo.get('cantidad')?.value || 0;
+      const insumo = this.insumos.find(i => i.id === id);
+
+      if (insumo) {
+        const costoParcial = cant * (insumo.costo_unitario_uso || 0);
+        grupo.get('costo')?.setValue(costoParcial, { emitEvent: false });
+        total += costoParcial;
+      }
+    });
+    this.recetaForm.get('costo_total')?.setValue(total);
+  }
+
+  // CORRECCIÓN NG3: Getter para simplificar el cálculo matemático en el HTML
+  get costoPorPlato(): number {
+    const total = this.recetaForm.get('costo_total')?.value || 0;
+    const porciones = this.recetaForm.get('porciones')?.value || 1;
+    return total / porciones;
   }
 
   async guardarReceta() {
     if (this.recetaForm.invalid) return;
-
     try {
       const form = this.recetaForm.getRawValue();
       const cabecera = {
         nombre: form.nombre,
         porciones: form.porciones,
-        costo_total: this.costoTotalReceta
+        costo_total: form.costo_total
       };
       const detalle = form.ingredientes.map((ing: any) => ({
         insumo_id: ing.insumo_id,
         cantidad_utilizada: ing.cantidad,
-        costo_calculado: parseFloat(ing.costo_parcial)
+        costo_calculado: ing.costo
       }));
 
       await this.recetasService.guardarRecetaCompleta(cabecera, detalle);
-      alert('✅ Receta guardada en Supabase');
-      this.recetaForm.reset({ porciones: 1 });
-      this.ingredientes.clear();
-      this.costoTotalReceta = 0;
+      alert('✅ Receta guardada con éxito.');
+      this.recetaForm.reset({ porciones: 1, costo_total: 0 });
+      this.ingredientesForm.clear();
     } catch (e: any) {
       alert('❌ Error: ' + e.message);
     }

@@ -1,86 +1,92 @@
-@use "sass:color";
-
-$primary: #ff4757; // Rojo Chef vibrante
-$secondary: #2f3542;
-$glass: rgba(255, 255, 255, 0.85);
-
-.mobile-container {
+.recipe-editor {
+  padding: 24px 16px 180px;
+  background: #0d0d0d; // Fondo oscuro base
   min-height: 100vh;
-  background: linear-gradient(135deg, #f1f2f6 0%, #dfe4ea 100%);
-  padding-bottom: 150px; // Espacio para el footer sticky
+  color: #fff;
+  max-width: 650px; // Evita que se descuadre en PC
+  margin: 0 auto;
 }
 
-.app-header {
-  background: $glass;
-  backdrop-filter: blur(10px);
-  padding: 1.5rem;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid rgba(0,0,0,0.05);
-
-  .header-content {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    
-    h1 { font-size: 1.2rem; margin: 0; font-weight: 800; color: $secondary; }
-  }
+.inventory-header {
+  margin-bottom: 30px;
+  .header-content { display: flex; align-items: center; gap: 15px; }
+  h1 { font-size: 1.8rem; font-weight: 800; margin: 0; }
+  .btn-back { background: none; border: none; color: white; font-size: 1.5rem; }
 }
 
-.ingredient-card {
-  background: white;
-  border-radius: 18px;
-  padding: 1.2rem;
-  margin-bottom: 1rem;
-  position: relative;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
-  border: 1px solid rgba(0,0,0,0.02);
-
-  .card-inputs {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-top: 10px;
-  }
-}
-
-.sticky-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: $glass;
-  backdrop-filter: blur(15px);
-  padding: 1.5rem;
-  border-radius: 25px 25px 0 0;
-  box-shadow: 0 -10px 30px rgba(0,0,0,0.1);
-
-  .cost-summary {
-    display: flex;
-    justify-content: space-around;
-    margin-bottom: 1rem;
-    
-    .highlight { color: $primary; }
-  }
-}
-
-.btn-submit-main {
+// CORRECCIÓN DE INPUTS: Fuera el gris feo, bienvenido el cristal
+.glass-input {
   width: 100%;
-  padding: 1rem;
-  background: $primary;
-  color: white;
-  border: none;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.05) !important; // Casi negro translúcido
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
   border-radius: 14px;
-  font-weight: 700;
+  color: #fff !important;
   font-size: 1rem;
-  box-shadow: 0 4px 15px rgba(255, 71, 87, 0.3);
+  
+  &:focus { outline: none; border-color: #ff6b00; background: rgba(255, 255, 255, 0.08) !important; }
 }
 
-// Animaciones
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+label { display: block; font-size: 0.8rem; color: #888; margin-bottom: 8px; font-weight: 600; }
+
+.main-config {
+  padding: 24px;
+  margin-bottom: 30px;
+  .portions-row {
+    margin-top: 20px;
+    display: flex; justify-content: space-between; align-items: center;
+  }
 }
 
-.animate-up { animation: fadeInUp 0.5s ease forwards; }
+.stepper-glass {
+  display: flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.05);
+  padding: 8px 16px; border-radius: 16px;
+  button { width: 35px; height: 35px; border-radius: 10px; border: none; background: rgba(255,255,255,0.1); color: #fff; }
+  input { width: 40px; text-align: center; background: transparent; border: none; color: #ff6b00; font-size: 1.4rem; font-weight: 800; }
+  .unit { font-size: 0.7rem; color: #666; font-weight: 800; text-transform: uppercase; }
+}
+
+// Tarjetas de Ingredientes (Mismo estilo que Insumos)
+.ingredient-item {
+  margin-bottom: 16px;
+  padding: 20px;
+  .item-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 15px; margin-bottom: 15px; }
+}
+
+.item-footer {
+  display: flex; justify-content: space-between; align-items: center;
+  border-top: 1px solid rgba(255,255,255,0.05); padding-top: 12px;
+  .subtotal { font-size: 0.9rem; strong { color: #ff6b00; } }
+  .btn-remove-red { background: none; border: none; color: #ff4757; font-weight: 700; font-size: 0.8rem; }
+}
+
+// Resumen Flotante (Bottom Sheet)
+.floating-summary {
+  position: fixed; bottom: 85px; left: 16px; right: 16px;
+  max-width: 618px; margin: 0 auto; // Alineado al ancho del editor en PC
+  padding: 24px; border-radius: 28px;
+  z-index: 1000;
+  background: rgba(18, 18, 18, 0.95);
+  border: 1px solid rgba(255,255,255,0.1);
+
+  .summary-content {
+    display: flex; justify-content: space-around; align-items: center; margin-bottom: 20px;
+    .separator { width: 1px; height: 40px; background: rgba(255,255,255,0.1); }
+    .summary-block {
+      text-align: center;
+      small { display: block; font-size: 0.7rem; color: #888; text-transform: uppercase; margin-bottom: 4px; }
+      .value { font-size: 1.2rem; font-weight: 800; }
+      &.highlight .value-accent { color: #ff6b00; font-size: 1.6rem; font-weight: 800; text-shadow: 0 0 15px rgba(255, 107, 0, 0.3); }
+    }
+  }
+}
+
+.btn-primary-glow {
+  width: 100%; padding: 18px; border-radius: 18px; border: none;
+  background: linear-gradient(135deg, #ff6b00, #ff4757);
+  color: #fff; font-weight: 800; font-size: 1.1rem;
+  box-shadow: 0 8px 25px rgba(255, 107, 0, 0.4);
+}
+
+.btn-add-orange { background: none; border: none; color: #ff6b00; font-weight: 800; font-size: 0.9rem; cursor: pointer; }
+.section-title { display: flex; justify-content: space-between; align-items: center; margin: 30px 0 15px; }

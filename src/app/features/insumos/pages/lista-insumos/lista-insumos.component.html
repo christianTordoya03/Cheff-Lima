@@ -1,112 +1,82 @@
-<div class="container">
-  <h2>Gestión de Insumos</h2>
-
-  <form [formGroup]="insumoForm" (ngSubmit)="guardarInsumo()" class="chef-form">
-    <div class="form-group">
-      <label>Nombre del Insumo:</label>
-      <input type="text" formControlName="nombre" (input)="detectarProducto($event)" placeholder="Ej: Limón Piurano" />
-      @if (mensajeInteligente) {
-      <small class="smart-tag" style="color: #27ae60; font-weight: bold;">{{ mensajeInteligente }}</small>
-      }
+<div class="mobile-inventory animate-up">
+  <header class="inventory-header">
+    <div class="header-content">
+      <h1>Mi Despensa 🥬</h1>
+      <p>Gestiona precios y mermas reales</p>
     </div>
+    <button class="btn-add-pill btn-tap" (click)="abrirFormulario()">+ Nuevo</button>
+  </header>
 
-    <div class="yield-calculator"
-      style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; background: #f4f7f6; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
-      <div class="form-group">
-        <label>Peso Bruto (PB):</label>
-        <div style="display: flex; gap: 5px;">
-          <input type="number" #pbInput placeholder="Total comprado" style="flex: 2;" />
-          <select formControlName="unidad_medida" style="flex: 1;">
-            <option value="kg">kg</option>
-            <option value="un">un</option>
-          </select>
-        </div>
-      </div>
+  <div class="search-container">
+    <input type="text" placeholder="Buscar insumo..." class="glass-input">
+  </div>
 
-      <div class="form-group">
-        <label>Prod. Utilizable (PU):</label>
-        <div style="display: flex; gap: 5px;">
-          <input type="number" #puInput (input)="actualizarCalculos(pbInput.value, puInput.value)"
-            placeholder="Zumo/Limpio" style="flex: 2;" />
-          <select formControlName="unidad_uso" style="flex: 1;">
-            <option value="gr">gr</option>
-            <option value="ml">ml</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-      <div class="form-group">
-        <label>Precio Pagado (S/):</label>
-        <input type="number" formControlName="precio_compra"
-          (input)="actualizarCalculos(pbInput.value, puInput.value)" />
-      </div>
-      <div class="form-group">
-        <label>% Merma:</label>
-        <input type="number" formControlName="porcentaje_merma" readonly style="background: #eee;" />
-      </div>
-    </div>
-
-    <div
-      style="background: #e8f4fd; padding: 10px; border-radius: 5px; margin: 15px 0; text-align: center; border: 1px solid #b3d7ff;">
-      <strong>Costo Real:</strong>
-      <span style="color: #27ae60; font-weight: bold;">S/ {{ insumoForm.get('costo_unitario_uso')?.value?.toFixed(3)
-        }}</span>
-      por {{ insumoForm.get('unidad_uso')?.value }}
-    </div>
-
-    <button type="submit" [disabled]="insumoForm.invalid" class="btn-primary" style="width: 100%;">
-      {{ insumoEditandoId ? 'Actualizar Cambios' : 'Guardar Insumo' }}
-    </button>
-
-    @if (insumoEditandoId) {
-    <button type="button" (click)="resetearFormulario()"
-      style="width: 100%; margin-top: 10px; background: #95a5a6; color: white; border: none; padding: 10px; border-radius: 5px; cursor: pointer;">Cancelar
-      Edición</button>
-    }
-  </form>
-
-  <section class="list-section" style="margin-top: 30px;">
-    <h3>Inventario Actual</h3>
-    <table class="chef-table" style="width: 100%; border-collapse: collapse;">
-      <thead style="background: #2c3e50; color: white;">
-        <tr>
-          <th style="padding: 10px; text-align: left;">Nombre</th>
-          <th>Unidad</th>
-          <th>Precio Mercado</th>
-          <th>% Merma</th>
-          <th style="color: #2ecc71;">Costo Real (Uso)</th>
-          <th>Acciones</th>
-        </tr>
-      </thead>
-      <tbody>
-        @for (item of insumos; track item.id) {
-        <tr style="border-bottom: 1px solid #eee;">
-          <td style="padding: 10px;">{{ item.nombre }}</td>
-          <td>{{ item.unidad_medida }}</td>
-          <td>S/ {{ item.precio_compra }}</td>
-          <td>{{ item.porcentaje_merma }}%</td>
-          <td style="font-weight: bold;">
-            S/ {{ item.costo_unitario_uso.toFixed(3) }}
-            <br><small style="color: #3498db; font-weight: normal;">(S/ {{ (item.costo_unitario_uso * 100).toFixed(2) }}
-              x 100)</small>
-          </td>
-          <td>
-            <div style="display: flex; gap: 10px; justify-content: center;">
-              <button (click)="editarInsumo(item)"
-                style="background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="Editar">
-                ✏️
-              </button>
-              <button (click)="eliminarInsumo(item.id)"
-                style="background: none; border: none; cursor: pointer; font-size: 1.2rem;" title="Eliminar">
-                🗑️
-              </button>
+  <div class="insumos-stack">
+    @for (item of insumos; track item.id) {
+      <div class="insumo-card glass-card">
+        <div class="card-body">
+            <div class="main-info">
+              <span class="category-tag">{{ item.unidad_medida }}</span>
+              <h3>{{ item.nombre }}</h3>
+              <p class="merma-info">Rendimiento: <strong>{{ 100 - item.porcentaje_merma }}%</strong></p>
             </div>
-          </td>
-        </tr>
-        }
-      </tbody>
-    </table>
-  </section>
+            <div class="cost-display">
+              <span class="price">S/ {{ item.costo_unitario_uso | number:'1.2-2' }}</span>
+              <small>por {{ item.unidad_uso }}</small>
+            </div>
+          </div>
+          <div class="card-actions">
+            <button class="btn-icon edit" (click)="editarInsumo(item)">✏️</button>
+            <button class="btn-icon delete" (click)="eliminarInsumo(item.id!)">🗑️</button>
+          </div>
+      </div>
+    }
+  </div>
+
+  @if (mostrarFormulario) {
+    <div class="form-overlay" (click)="cancelar()">
+      <div class="bottom-sheet glass-card-heavy animate-slide-up" (click)="$event.stopPropagation()">
+        <div class="drag-handle"></div>
+        
+        <header class="sheet-header">
+          <h2>{{ esEdicion ? 'Editar Insumo' : 'Nuevo Insumo' }}</h2>
+          <p>Calcula el costo real de tu materia prima</p>
+        </header>
+
+        <form [formGroup]="insumoForm" (ngSubmit)="guardarInsumo()">
+          <div class="input-glass-group">
+            <label>Nombre</label>
+            <input type="text" formControlName="nombre" placeholder="Ej: Cebolla Roja">
+          </div>
+
+          <div class="row-grid">
+            <div class="input-glass-group">
+              <label>Precio Compra (S/)</label>
+              <input type="number" formControlName="precio_compra" placeholder="0.00">
+            </div>
+            <div class="input-glass-group">
+              <label>Medida</label>
+              <select formControlName="unidad_medida">
+                <option value="kg">Kilos</option>
+                <option value="lt">Litros</option>
+                <option value="und">Unid.</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="input-glass-group">
+            <label>Merma estimada (%)</label>
+            <input type="number" formControlName="porcentaje_merma" placeholder="0">
+          </div>
+
+          <div class="form-actions">
+            <button type="button" class="btn-ghost" (click)="cancelar()">Cancelar</button>
+            <button type="submit" class="btn-primary-glow" [disabled]="insumoForm.invalid">
+              {{ esEdicion ? 'Actualizar' : 'Añadir a Despensa' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  }
 </div>

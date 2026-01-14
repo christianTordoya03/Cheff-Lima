@@ -1,31 +1,58 @@
-<div class="mobile-home animate-up">
-  <header class="home-header">
-    <h1>👋 ¡Hola, Chef!</h1>
-    <p>¿Qué receta costearemos hoy?</p>
+<div class="mobile-dashboard animate-up">
+  <header class="dashboard-header">
+    <div class="user-info">
+      <h1>¡Hola, Chef! 👋</h1>
+      <p>¿Qué receta costearemos hoy?</p>
+    </div>
+    <div class="header-badge">👨‍🍳</div>
   </header>
 
-  <div class="stats-carousel">
-    <div class="stat-pill"><strong>{{ insumosCount || 0 }}</strong> Insumos</div>
-    <div class="stat-pill"><strong>{{ recetasCount || 0 }}</strong> Recetas</div>
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-value">{{ insumosCount }}</span>
+      <span class="stat-label">Insumos</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-value">{{ recetasCount }}</span>
+      <span class="stat-label">Recetas</span>
+    </div>
   </div>
 
-  <div class="quick-actions">
-    <div class="action-card btn-tap" routerLink="/insumos">
-      <div class="icon">🥬</div>
-      <div class="text">
-        <h3>Insumos</h3>
-        <p>Precios de Unicachi</p>
-      </div>
-      <span class="arrow">→</span>
-    </div>
+  <section class="quick-actions">
+    <h3>Acciones Rápidas</h3>
+    
+    <div class="action-grid">
+      <button class="action-btn btn-tap primary" (click)="irARecetario()">
+        <span class="icon">📖</span>
+        <div class="text">
+          <strong>Nueva Receta</strong>
+          <small>Calcula costos rers</small>
+        </div>
+        <span class="arrow">→</span>
+      </button>
 
-    <div class="action-card btn-tap primary" routerLink="/recetas">
-      <div class="icon">📖</div>
-      <div class="text">
-        <h3>Recetario</h3>
-        <p>Calcular Merma</p>
-      </div>
-      <span class="arrow">→</span>
+      <button class="action-btn btn-tap" routerLink="/insumos">
+        <span class="icon">🥬</span>
+        <div class="text">
+          <strong>Mis Insumos</strong>
+          <small>Gestionar mermas</small>
+        </div>
+        <span class="arrow">→</span>
+      </button>
+
+      <button class="action-btn btn-tap" (click)="irARecetario()">
+        <span class="icon">📁</span>
+        <div class="text">
+          <strong>Ver Recetario</strong>
+          <small>Tus platos guardados</small>
+        </div>
+        <span class="arrow">→</span>
+      </button>
     </div>
+  </section>
+
+  <div class="tip-card glass-card">
+    <span class="tip-icon">💡</span>
+    <p>Recuerda actualizar el precio del <strong>Limón</strong> si hubo cambios en el mercado hoy.</p>
   </div>
 </div>

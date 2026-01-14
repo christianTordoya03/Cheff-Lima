@@ -54,4 +54,20 @@ body {
   display: inline-block;
 }
 
+// Regla de oro para evitar desbordamientos
+*, *::before, *::after {
+  box-sizing: border-box; // El padding no suma al ancho total
+}
+
+input, select, textarea {
+  max-width: 100%; // Nunca más ancho que su padre
+  width: 100%;     // Ocupa el espacio disponible
+}
+
+.container-mobile {
+  width: 100%;
+  padding: 0 15px; // Margen de seguridad lateral
+  margin: 0 auto;
+}
+
 @keyframes spin { to { transform: rotate(360deg); } }

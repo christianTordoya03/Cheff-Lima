@@ -1,26 +1,48 @@
-<div class="auth-wrapper animate-up">
+<div class="auth-container">
   <div class="glass-card">
-    <div class="brand-logo">🔪 <h2>Cheff Lima</h2></div>
-    
-    <form [formGroup]="loginForm" (ngSubmit)="onLogin()">
-      <div class="input-group">
-        <input type="email" formControlName="email" placeholder=" " id="email">
-        <label for="email">Correo Electrónico</label>
-      </div>
-      
-      <div class="input-group">
-        <input type="password" formControlName="password" placeholder=" " id="pass">
-        <label for="pass">Contraseña</label>
-      </div>
-
-      <button type="submit" class="btn-primary-mobile btn-tap" [disabled]="loginForm.invalid">
-        Entrar a mi Cocina
-      </button>
-    </form>
-
-    <div class="auth-footer">
-      <button (click)="onForgotPassword()" class="link-btn">¿Olvidaste tu clave?</button>
-      <p>¿Nuevo aquí? <a routerLink="/auth/register">Regístrate</a></p>
+    <div class="auth-header">
+      <h1>Cheff Lima</h1>
+      <p>Gestión inteligente de costos</p>
     </div>
+
+    <form [formGroup]="loginForm" (ngSubmit)="onLogin()" class="auth-form">
+      <div class="form-group">
+        <label for="email">Correo Electrónico</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          placeholder="ejemplo@correo.com"
+          [class.error]="loginForm.get('email')?.touched && loginForm.get('email')?.invalid"
+        >
+      </div>
+
+      <div class="form-group">
+        <label for="password">Contraseña</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password" 
+          placeholder="••••••••"
+          [class.error]="loginForm.get('password')?.touched && loginForm.get('password')?.invalid"
+        >
+      </div>
+
+      <div class="auth-options">
+        <a (click)="onForgotPassword()" class="link-text">¿Olvidaste tu contraseña?</a>
+      </div>
+
+      <button type="submit" [disabled]="loginForm.invalid || isLoading" class="btn-primary">
+        @if (isLoading) {
+          <span class="spinner"></span> Cargando...
+        } @else {
+          Iniciar Sesión
+        }
+      </button>
+
+      <div class="auth-footer">
+        <p>¿No tienes una cuenta? <a routerLink="/auth/register" class="link-highlight">Regístrate aquí</a></p>
+      </div>
+    </form>
   </div>
 </div>

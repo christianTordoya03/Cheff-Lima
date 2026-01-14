@@ -15,6 +15,7 @@ export class RegisterComponent {
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
+  isLoading = false;
 
   registerForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
@@ -23,11 +24,13 @@ export class RegisterComponent {
 
   async onSubmit() {
     if (this.registerForm.valid) {
+      this.isLoading = true; // Inicia carga
       const { email, password } = this.registerForm.value;
       const { data, error } = await this.authService.signUp(email!, password!);
 
       if (error) {
         alert('Error al registrar: ' + error.message);
+        this.isLoading = false; // Detiene carga en error
       } else {
         alert('¡Registro exitoso! Revisa tu correo para confirmar.');
         this.router.navigate(['/dashboard']);

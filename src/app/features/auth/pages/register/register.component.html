@@ -1,18 +1,46 @@
-<div class="register-container">
-  <h2>Registro de Restaurante</h2>
-  <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
-    <div>
-      <label>Correo Electrónico:</label>
-      <input type="email" formControlName="email" placeholder="ejemplo@restaurante.com">
-    </div>
-    
-    <div>
-      <label>Contraseña (mín. 6 caracteres):</label>
-      <input type="password" formControlName="password">
+<div class="auth-container">
+  <div class="glass-card animate-up">
+    <div class="auth-header">
+      <div class="icon-circle">👨‍🍳</div>
+      <h1>Crear Cuenta</h1>
+      <p>Únete a la red de chefs más eficiente de Lima</p>
     </div>
 
-    <button type="submit" [disabled]="registerForm.invalid">Crear Cuenta</button>
-  </form>
+    <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="auth-form">
+      <div class="form-group">
+        <label for="email">Correo del Restaurante</label>
+        <input 
+          type="email" 
+          id="email" 
+          formControlName="email" 
+          placeholder="ejemplo@restaurante.com"
+          [class.error]="registerForm.get('email')?.touched && registerForm.get('email')?.invalid"
+        >
+      </div>
 
-  <p>¿Ya tienes cuenta? <a routerLink="/auth/login">Inicia sesión aquí</a></p>
+      <div class="form-group">
+        <label for="password">Contraseña Maestra</label>
+        <input 
+          type="password" 
+          id="password" 
+          formControlName="password" 
+          placeholder="Mínimo 6 caracteres"
+          [class.error]="registerForm.get('password')?.touched && registerForm.get('password')?.invalid"
+        >
+        <small class="helper-text">Debe ser segura y fácil de recordar.</small>
+      </div>
+
+      <button type="submit" [disabled]="registerForm.invalid || isLoading" class="btn-primary btn-tap">
+        @if (isLoading) {
+          <span class="spinner"></span> Creando cocina...
+        } @else {
+          Empezar Ahora
+        }
+      </button>
+
+      <div class="auth-footer">
+        <p>¿Ya tienes una cuenta? <a routerLink="/auth/login" class="link-highlight">Inicia sesión aquí</a></p>
+      </div>
+    </form>
+  </div>
 </div>

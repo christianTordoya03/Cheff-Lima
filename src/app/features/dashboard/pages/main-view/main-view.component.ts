@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router, RouterModule } from '@angular/router';
+import { SidebarComponent } from '../../../../shared/components/sidebar/sidebar.component';
 
 @Component({
   selector: 'app-main-view',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, SidebarComponent],
   templateUrl: './main-view.component.html',
   styleUrl: './main-view.component.scss'
 })

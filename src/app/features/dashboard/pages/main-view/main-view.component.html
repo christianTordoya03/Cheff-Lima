@@ -1,21 +1,9 @@
-@if (user$ | async; as user) {
-  <div style="display: flex; min-height: 100vh;">
-    <nav style="width: 250px; border-right: 1px solid #ccc; padding: 20px;">
-      <h2>ChefApp</h2>
-      <p style="font-size: 0.8em;">{{ user.email }}</p>
-      <hr>
-      <ul style="list-style: none; padding: 0;">
-        <li><a routerLink="/dashboard" routerLinkActive="active">Inicio</a></li>
-        <li><a routerLink="/insumos" routerLinkActive="active">Mis Insumos</a></li>
-        <li><a routerLink="/recetas" routerLinkActive="active">Recetario</a></li>
-      </ul>
-      <button (click)="logout()" style="background: red; color: white; border: none; padding: 5px 10px; cursor: pointer;">
-        Salir
-      </button>
-    </nav>
+<div class="layout-container">
+  <app-sidebar></app-sidebar>
 
-    <main style="flex: 1; padding: 20px;">
+  <main class="main-content">
+    <div class="page-wrapper">
       <router-outlet></router-outlet>
-    </main>
-  </div>
-}
+    </div>
+  </main>
+</div>

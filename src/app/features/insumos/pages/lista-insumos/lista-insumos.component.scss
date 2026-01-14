@@ -1,120 +1,221 @@
-@use "sass:color";
-
-// Variables de color para ChefApp
-$primary-chef: #2c3e50;
-$success-chef: #27ae60;
-$accent-chef: #3498db;
-$bg-light: #f8f9fa;
-
-.container {
-  padding: 20px;
-  max-width: 1000px;
-  margin: 0 auto;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-
-  h2 { color: $primary-chef; border-bottom: 3px solid $success-chef; display: inline-block; margin-bottom: 25px; }
+.mobile-inventory {
+  padding: 24px 16px;
+  background: linear-gradient(135deg, #1a1a1a 0%, #0d0d0d 100%);
+  min-height: 100vh;
+  color: #fff;
 }
 
-.chef-form {
-  background: white;
-  padding: 25px;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  margin-bottom: 40px;
+.inventory-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 24px;
 
-  .form-group {
+  h1 { font-size: 1.8rem; font-weight: 800; margin: 0; }
+  p { color: rgba(255, 255, 255, 0.5); font-size: 0.9rem; margin: 4px 0 0; }
+}
+
+.btn-add-pill {
+  background: #ff6b00;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 50px;
+  font-weight: 700;
+  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.3);
+}
+
+.search-container {
+  margin-bottom: 24px;
+  .glass-input {
+    width: 100%;
+    padding: 14px 20px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    color: #fff;
+    backdrop-filter: blur(5px);
+    
+    &:focus { outline: none; border-color: #ff6b00; }
+  }
+}
+
+.insumo-card {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  .card-body {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  h3 { margin: 8px 0 4px; font-size: 1.2rem; }
+  
+  .category-tag {
+    background: rgba(255, 107, 0, 0.2);
+    color: #ff6b00;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .merma-info {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.5);
+    margin: 0;
+  }
+
+  .cost-display {
+    text-align: right;
     display: flex;
     flex-direction: column;
-    margin-bottom: 15px;
-
-    label { font-weight: 600; color: $primary-chef; margin-bottom: 6px; font-size: 0.9rem; }
-    
-    input, select {
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 6px;
-      transition: border-color 0.3s;
-      &:focus { border-color: $accent-chef; outline: none; }
-    }
-
-    .smart-tag {
-      color: $success-chef;
-      font-weight: bold;
-      margin-top: 5px;
-      font-size: 0.85rem;
-      animation: fadeIn 0.5s ease-in;
-    }
+    .price { font-size: 1.3rem; font-weight: 800; color: #ff6b00; }
+    small { font-size: 0.7rem; color: rgba(255, 255, 255, 0.4); }
   }
+}
 
-  .yield-calculator {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-    background: $bg-light;
-    padding: 15px;
-    border-radius: 10px;
-    margin: 20px 0;
-    border-left: 5px solid $accent-chef;
+.card-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  padding-top: 12px;
 
-    .input-unit {
-      display: flex;
-      gap: 5px;
-      input { flex: 2; }
-      select { flex: 1; background: #fff; }
-    }
+  .btn-icon {
+    background: rgba(255, 255, 255, 0.05);
+    border: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background 0.2s;
+
+    &:active { background: rgba(255, 255, 255, 0.15); }
   }
+}
 
-  .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 20px;
-  }
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+}
 
-  .readonly-input { background-color: #e9ecef; cursor: not-allowed; font-weight: bold; color: $success-chef; }
+.btn-close {
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  color: white;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  cursor: pointer;
+}
 
-  .btn-primary {
-    width: 100%;
-    padding: 12px;
-    background: $primary-chef;
+.actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 20px;
+  
+  button { flex: 1; }
+  .btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
     color: white;
     border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    margin-top: 10px;
-    transition: background 0.3s;
-    &:hover:not(:disabled) { 
-      background: color.adjust($primary-chef, $lightness: 10%); 
-    }
-    &:disabled { opacity: 0.5; cursor: not-allowed; }
+    padding: 12px;
+    border-radius: 12px;
   }
 }
 
-// Estilos de la Tabla de Inventario
-.chef-table {
+.form-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  border-collapse: collapse;
-  background: white;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-
-  thead {
-    background: $primary-chef;
-    color: white;
-    th { padding: 15px; text-align: left; }
-  }
-
-  tbody {
-    tr {
-      border-bottom: 1px solid #eee;
-      &:hover { background: #f1f8ff; }
-      td { padding: 12px 15px; }
-    }
-  }
-
-  .text-success { color: $success-chef; }
-  .font-bold { font-weight: bold; }
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 2000;
+  display: flex;
+  align-items: flex-end; // Lo pega abajo como App nativa
 }
 
-@keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
+.bottom-sheet {
+  width: 100%;
+  background: rgba(30, 30, 30, 0.85);
+  backdrop-filter: blur(25px);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 32px 32px 0 0; // Bordes redondeados solo arriba
+  padding: 20px 24px 40px;
+  box-shadow: 0 -10px 40px rgba(0,0,0,0.5);
+}
+
+.drag-handle {
+  width: 40px;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  margin: 0 auto 20px;
+}
+
+.input-glass-group {
+  margin-bottom: 18px;
+  label { font-size: 0.8rem; color: #aaa; margin-bottom: 6px; display: block; padding-left: 4px; }
+  
+  input, select {
+    width: 100%;
+    padding: 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 14px;
+    color: white;
+    font-size: 1rem;
+    &:focus { border-color: #ff6b00; outline: none; }
+  }
+}
+
+.row-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 12px;
+}
+
+.btn-primary-glow {
+  background: linear-gradient(135deg, #ff6b00, #ff4757);
+  color: white;
+  border: none;
+  padding: 16px;
+  border-radius: 16px;
+  font-weight: 700;
+  box-shadow: 0 4px 20px rgba(255, 107, 0, 0.4);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 16px;
+  border-radius: 16px;
+}
+
+// Animación de subida
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-slide-up {
+  animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+}
+

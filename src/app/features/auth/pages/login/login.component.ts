@@ -16,6 +16,9 @@ export class LoginComponent {
   private authService = inject(AuthService);
   private router = inject(Router);
 
+  // Solución: Declaramos la propiedad que falta
+  isLoading = false;
+
   loginForm = this.fb.group({
     email: ['', [Validators.required, Validators.email]],
     password: ['', [Validators.required]]
@@ -23,11 +26,14 @@ export class LoginComponent {
 
   async onLogin() {
     if (this.loginForm.valid) {
+      this.isLoading = true; // Iniciamos el estado de carga
+      
       const { email, password } = this.loginForm.value;
       const { data, error } = await this.authService.signIn(email!, password!);
 
       if (error) {
         alert('Error: ' + error.message);
+        this.isLoading = false; // Detenemos la carga si hay error
       } else {
         // Al loguearte con éxito, vamos al dashboard
         this.router.navigate(['/dashboard']);
@@ -42,7 +48,10 @@ export class LoginComponent {
       return;
     }
 
+    this.isLoading = true; // También podemos usarlo aquí
     const { error } = await this.authService.resetPassword(email);
+    this.isLoading = false;
+
     if (error) alert('Error: ' + error.message);
     else alert('📧 Se ha enviado un enlace de recuperación a tu correo.');
   }
